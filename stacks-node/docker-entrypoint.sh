@@ -58,7 +58,9 @@ dasel put -f /stacks/config/config.toml -v ${NODE_STACKER} -t bool node.stacker
 
 if [ "$NODE_STACKER" = "true" ]; then
   echo "Configuring node to run with signer/stacker..."
-  dasel delete -f /stacks/config/config.toml 'events_observer'
+  if dasel select -f /stacks/config/config.toml 'events_observer' >/dev/null 2>&1; then
+    dasel delete -f /stacks/config/config.toml 'events_observer'
+  fi
 
   cat <<EOF >> /stacks/config/config.toml
 
