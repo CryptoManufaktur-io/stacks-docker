@@ -1,0 +1,55 @@
+services:
+  stacks-node:
+    restart: unless-stopped
+    build:
+      context: ./stacks-node
+      dockerfile: Dockerfile.binary
+      args:
+        - STACKS_NODE_VERSION=${STACKS_NODE_VERSION}
+    user: "10000"
+    stop_grace_period: 1m
+    image: stacks-node:local
+    pull_policy: never
+    volumes:
+      - stacks-node-data:/stacks
+    ports:
+      - ${NODE_P2P_PORT}:${NODE_P2P_PORT}/tcp
+    environment:
+      - NETWORK=${NETWORK}
+      - SNAPSHOT=${SNAPSHOT:-}
+      - NODE_RPC_PORT=${NODE_RPC_PORT:-}
+      - NODE_P2P_PORT=${NODE_P2P_PORT:-}
+      - NODE_METRICS_PORT=${NODE_METRICS_PORT:-}
+      - NODE_STACKER=${NODE_STACKER:-}
+      - EXTRAS=${NODE_EXTRA_FLAGS:-}
+      - NODE_AUTH_TOKEN=${NODE_AUTH_TOKEN:-}
+      - BTC_HOST=${BTC_HOST:-}
+      - BTC_USER=${BTC_USER:-}
+      - BTC_PASS=${BTC_PASS:-}
+      - BTC_RPC_PORT=${BTC_RPC_PORT:-}
+      - BTC_P2P_PORT=${BTC_P2P_PORT:-}
+      - SIGNER_PORT=${SIGNER_PORT:-}
+    entrypoint:
+      - docker-entrypoint.sh
+      - stacks-node
+      - start
+      - --config
+      - /stacks/config/config.toml
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.stacks.service=stacks
+      - traefik.http.routers.stacks.entrypoints=websecure
+      - traefik.http.routers.stacks.rule=Host(`${RPC_HOST}.${DOMAIN}`)
+      - traefik.http.routers.stacks.tls.certresolver=letsencrypt
+      - traefik.http.routers.stackslb.service=stacks
+      - traefik.http.routers.stackslb.entrypoints=websecure
+      - traefik.http.routers.stackslb.rule=Host(`${RPC_LB}.${DOMAIN}`)
+      - traefik.http.routers.stackslb.tls.certresolver=letsencrypt
+      - traefik.http.services.stacks.loadbalancer.server.port=${NODE_RPC_PORT}
+      - metrics.scrape=true
+      - metrics.path=/metrics
+      - metrics.port=9153
+      - metrics.network=stacks-${NETWORK}
+
+volumes:
+  stacks-node-data:
