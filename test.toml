@@ -1,0 +1,1 @@
+events_observer = '[{"endpoint":"stacks-signer:30000","events_keys":["stackerdb","block_proposal","burn_blocks"],"timeout_ms":300000}]'

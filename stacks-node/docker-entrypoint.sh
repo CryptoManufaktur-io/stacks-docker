@@ -56,19 +56,17 @@ dasel put -f /stacks/config/config.toml -v "${NODE_AUTH_TOKEN}" connection_optio
 # Update signer/stacker config.
 dasel put -f /stacks/config/config.toml -v ${NODE_STACKER} -t bool node.stacker
 
-# if [ "$NODE_STACKER" = "true" ]; then
-#   echo "Configuring node to run with signer/stacker..."
-#   dasel put -f /stacks/config/config.toml -v true burnchain.stacker
-#   dasel put object -f /stacks/config/config.toml 'events_observer.[0]' \
-#   --value '{"endpoint": "", "events_keys": [events_keys = ["stackerdb", "block_proposal", "burn_blocks"]]}'
-# fi
-
 if [ "$NODE_STACKER" = "true" ]; then
   echo "Configuring node to run with signer/stacker..."
-  dasel put -f /stacks/config/config.toml 'events_observer[]'
-  dasel put -f /stacks/config/config.toml -v "stacks-signer:${SIGNER_PORT}" 'events_observer[0].endpoint'
-  dasel put -f /stacks/config/config.toml -v '["stackerdb", "block_proposal", "burn_blocks"]' 'events_observer[0].events_keys'
-  dasel put -f /stacks/config/config.toml -t int -v 300000 'events_observer[0].timeout_ms'
+  dasel delete -f /stacks/config/config.toml 'events_observer'
+
+  cat <<EOF >> /stacks/config/config.toml
+
+[[events_observer]]
+endpoint = "stacks-signer:${SIGNER_PORT}"
+events_keys = ["stackerdb","block_proposal","burn_blocks"]
+timeout_ms = 300000
+EOF
 fi
 
 cat /stacks/config/config.toml
