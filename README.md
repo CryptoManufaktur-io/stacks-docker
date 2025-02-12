@@ -16,7 +16,7 @@ If you want the consensus node RPC ports exposed locally, use `rpc-shared.yml` i
 
 To update the software, run `./stacksd update` and then `./stacksd up`
 
-## Running a Signer
+## Running a Signer
 
 A private key is required to run the Signer. Create one by running:
 
