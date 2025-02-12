@@ -1,0 +1,31 @@
+FROM debian:bookworm-slim
+
+ARG USER=stx
+ARG UID=10003
+ARG STX_VERSION=latest
+
+# See https://stackoverflow.com/a/55757473/12429735RUN
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --shell "/sbin/nologin" \
+    --uid "${UID}" \
+    "${USER}"
+
+RUN usermod -rG users ${USER}
+
+RUN apt-get update && apt-get install -y ca-certificates bash tzdata hwloc libhwloc-dev wget curl unzip lz4 zstd jq aria2 vim npm
+
+
+RUN npm install --global @stacks/cli@${STX_VERSION}
+
+RUN mkdir /stx && chown -R ${USER}:${USER} /stx
+
+# Belt and suspenders
+RUN chmod -R 755 /usr/local/bin/*
+
+USER ${USER}
+
+WORKDIR /stx
+
+ENTRYPOINT ["stx"]

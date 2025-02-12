@@ -1,0 +1,40 @@
+# Get dasel
+FROM ghcr.io/tomwright/dasel:2-alpine AS dasel
+
+FROM debian:bookworm-slim
+
+ARG USER=stacks-node
+ARG UID=10000
+ARG STACKS_NODE_VERSION=latest
+
+# See https://stackoverflow.com/a/55757473/12429735RUN
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --shell "/sbin/nologin" \
+    --uid "${UID}" \
+    "${USER}"
+
+RUN usermod -rG users ${USER}
+
+RUN apt-get update && apt-get install -y ca-certificates bash tzdata hwloc libhwloc-dev wget curl unzip lz4 zstd jq aria2 vim
+
+
+RUN wget https://github.com/stacks-network/stacks-core/releases/download/${STACKS_NODE_VERSION}/linux-musl-x64.zip
+RUN unzip linux-musl-x64.zip && mv stacks-node /usr/local/bin/
+
+COPY --from=dasel --chown=${USER}:${USER} /usr/local/bin/dasel /usr/local/bin/
+
+RUN mkdir -p /stacks/data && mkdir /stacks/config && chown -R ${USER}:${USER} /stacks
+
+# Cannot assume buildkit, hence no chmod
+COPY ./docker-entrypoint.sh /usr/local/bin/
+
+# Belt and suspenders
+RUN chmod -R 755 /usr/local/bin/*
+
+USER ${USER}
+
+WORKDIR /stacks
+
+ENTRYPOINT ["stacks-node"]

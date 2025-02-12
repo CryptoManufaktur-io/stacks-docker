@@ -1,8 +1,8 @@
 services:
-  stacks-node:
+  node:
     restart: unless-stopped
     build:
-      context: ./stacks-node
+      context: ./node
       dockerfile: Dockerfile.binary
       args:
         - STACKS_NODE_VERSION=${STACKS_NODE_VERSION}

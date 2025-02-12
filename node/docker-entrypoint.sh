@@ -18,6 +18,11 @@ if [[ ! -f /stacks/.initialized ]]; then
   dasel put -f /stacks/config/config.toml -v "0.0.0.0:${NODE_P2P_PORT}" node.p2p_bind
   dasel put -f /stacks/config/config.toml -v "0.0.0.0:${NODE_METRICS_PORT}" node.prometheus_bind
 
+  # Fix epochs.
+  dasel put -f /stacks/config/config.toml -v 1900 -t int "burnchain.epochs.[8].start_height"
+  dasel put -f /stacks/config/config.toml -v 2000 -t int "burnchain.epochs.[].start_height"
+  dasel put -f /stacks/config/config.toml -v 3.1 "burnchain.epochs.[9].epoch_name"
+
   # Burnchain config.
   if [ "$NETWORK" = "mainnet" ]; then
     __mode="mainnet"
@@ -54,25 +59,21 @@ dasel put -f /stacks/config/config.toml -v "${BTC_P2P_PORT}" -t int burnchain.pe
 dasel put -f /stacks/config/config.toml -v "${NODE_AUTH_TOKEN}" connection_options.auth_token
 
 # Update signer/stacker config.
+if dasel -f /stacks/config/config.toml 'events_observer' >/dev/null 2>&1; then
+  dasel delete -f /stacks/config/config.toml 'events_observer'
+fi
+
 dasel put -f /stacks/config/config.toml -v ${NODE_STACKER} -t bool node.stacker
 
 if [ "$NODE_STACKER" = "true" ]; then
   echo "Configuring node to run with signer/stacker..."
-  if dasel select -f /stacks/config/config.toml 'events_observer' >/dev/null 2>&1; then
-    dasel delete -f /stacks/config/config.toml 'events_observer'
-  fi
-
-  cat <<EOF >> /stacks/config/config.toml
-
-[[events_observer]]
-endpoint = "stacks-signer:${SIGNER_PORT}"
-events_keys = ["stackerdb","block_proposal","burn_blocks"]
-timeout_ms = 300000
-EOF
+  dasel put -f /stacks/config/config.toml -v "signer:${SIGNER_PORT}" "events_observer.[].endpoint"
+  dasel put -f /stacks/config/config.toml -v "stackerdb" "events_observer.[0].events_keys.[]"
+  dasel put -f /stacks/config/config.toml -v "block_proposal" "events_observer.[0].events_keys.[]"
+  dasel put -f /stacks/config/config.toml -v "burn_blocks" "events_observer.[0].events_keys.[]"
+  dasel put -f /stacks/config/config.toml -v 300000 -t int "events_observer.[0].timeout_ms"
 fi
 
-cat /stacks/config/config.toml
-
-#stacks-node check-config --config /stacks/config/config.toml
-
+# Word splitting is desired for the command line parameters
+# shellcheck disable=SC2086
 exec "$@" ${EXTRAS}

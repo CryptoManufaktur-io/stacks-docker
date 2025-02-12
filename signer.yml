@@ -1,0 +1,53 @@
+services:
+  signer:
+    restart: unless-stopped
+    build:
+      context: ./signer
+      dockerfile: Dockerfile.binary
+      args:
+        - STACKS_NODE_VERSION=${STACKS_NODE_VERSION}
+    user: "10001"
+    stop_grace_period: 1m
+    image: stacks-signer:local
+    pull_policy: never
+    volumes:
+      - stacks-signer-data:/signer
+    environment:
+      - NETWORK=${NETWORK}
+      - NODE_RPC_PORT=${NODE_RPC_PORT:-}
+      - NODE_AUTH_TOKEN=${NODE_AUTH_TOKEN:-}
+      - SIGNER_PORT=${SIGNER_PORT:-}
+      - SIGNER_METRICS_PORT=${SIGNER_METRICS_PORT:-}
+      - SIGNER_PRIVATE_KEY=${SIGNER_PRIVATE_KEY:-}
+    entrypoint:
+      - docker-entrypoint.sh
+      - stacks-signer
+      - run
+      - --config
+      - /signer/config/config.toml
+    labels:
+      - traefik.enable=false
+      - traefik.http.routers.stacks.service=stacks
+      - metrics.scrape=true
+      - metrics.path=/metrics
+      - metrics.port=${SIGNER_METRICS_PORT}
+      - metrics.network=stacks-${NETWORK}
+    networks:
+      default:
+        aliases:
+          - stacks-signer
+
+  stx:
+    profiles: ["tools"]
+    build:
+      context: ./stx
+      dockerfile: Dockerfile.binary
+      args:
+        - USER=stx
+        - STX_VERSION=${STX_VERSION}
+    image: stx:local
+    pull_policy: never
+    user: stx
+
+volumes:
+  stacks-signer-data:
