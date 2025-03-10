@@ -18,11 +18,6 @@ if [[ ! -f /stacks/.initialized ]]; then
   dasel put -f /stacks/config/config.toml -v "0.0.0.0:${NODE_P2P_PORT}" node.p2p_bind
   dasel put -f /stacks/config/config.toml -v "0.0.0.0:${NODE_METRICS_PORT}" node.prometheus_bind
 
-  # Fix epochs.
-  dasel put -f /stacks/config/config.toml -v 1900 -t int "burnchain.epochs.[8].start_height"
-  dasel put -f /stacks/config/config.toml -v 2000 -t int "burnchain.epochs.[].start_height"
-  dasel put -f /stacks/config/config.toml -v 3.1 "burnchain.epochs.[9].epoch_name"
-
   # Burnchain config.
   if [ "$NETWORK" = "mainnet" ]; then
     __mode="mainnet"
