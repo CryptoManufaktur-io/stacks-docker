@@ -12,6 +12,8 @@ services:
     pull_policy: never
     volumes:
       - stacks-signer-data:/signer
+    ports:
+      - ${SIGNER_METRICS_PORT}:${SIGNER_METRICS_PORT}/tcp
     environment:
       - NETWORK=${NETWORK}
       - NODE_RPC_PORT=${NODE_RPC_PORT:-}
