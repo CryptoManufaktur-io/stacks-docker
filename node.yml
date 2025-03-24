@@ -14,6 +14,7 @@ services:
       - stacks-node-data:/stacks
     ports:
       - ${NODE_P2P_PORT}:${NODE_P2P_PORT}/tcp
+      - 127.0.0.1:${NODE_RPC_PORT}:${NODE_RPC_PORT}/tcp
     environment:
       - NETWORK=${NETWORK}
       - SNAPSHOT=${SNAPSHOT:-}
