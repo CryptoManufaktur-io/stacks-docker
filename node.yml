@@ -14,7 +14,7 @@ services:
       - stacks-node-data:/stacks
     ports:
       - ${NODE_P2P_PORT}:${NODE_P2P_PORT}/tcp
-      - 127.0.0.1:${NODE_RPC_PORT}:${NODE_RPC_PORT}/tcp
+      - ${NODE_METRICS_PORT}:${NODE_METRICS_PORT}/tcp
     environment:
       - NETWORK=${NETWORK}
       - SNAPSHOT=${SNAPSHOT:-}
@@ -49,7 +49,7 @@ services:
       - traefik.http.services.stacks.loadbalancer.server.port=${NODE_RPC_PORT}
       - metrics.scrape=true
       - metrics.path=/metrics
-      - metrics.port=9153
+      - metrics.port=${NODE_METRICS_PORT}
       - metrics.network=stacks-${NETWORK}
 
 volumes:
