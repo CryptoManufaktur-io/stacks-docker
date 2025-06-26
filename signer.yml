@@ -14,7 +14,7 @@ services:
       - stacks-signer-data:/signer
     environment:
       - NETWORK=${NETWORK}
-      - NODE_ENDPOINT=${NODE_ENDPOINT:node}
+      - NODE_ENDPOINT=${NODE_ENDPOINT:-node}
       - NODE_RPC_PORT=${NODE_RPC_PORT:-}
       - NODE_AUTH_TOKEN=${NODE_AUTH_TOKEN:-}
       - SIGNER_PORT=${SIGNER_PORT:-}
