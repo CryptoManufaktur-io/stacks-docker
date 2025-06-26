@@ -14,7 +14,6 @@ services:
       - stacks-node-data:/stacks
     ports:
       - ${NODE_P2P_PORT}:${NODE_P2P_PORT}/tcp
-      - ${NODE_METRICS_PORT}:${NODE_METRICS_PORT}/tcp
     environment:
       - NETWORK=${NETWORK}
       - SNAPSHOT=${SNAPSHOT:-}
@@ -29,6 +28,7 @@ services:
       - BTC_PASS=${BTC_PASS:-}
       - BTC_RPC_PORT=${BTC_RPC_PORT:-}
       - BTC_P2P_PORT=${BTC_P2P_PORT:-}
+      - SIGNER_ENDPOINT=${SIGNER_ENDPOINT:signer}
       - SIGNER_PORT=${SIGNER_PORT:-}
     entrypoint:
       - docker-entrypoint.sh

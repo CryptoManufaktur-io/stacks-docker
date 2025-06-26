@@ -62,7 +62,7 @@ dasel put -f /stacks/config/config.toml -v ${NODE_STACKER} -t bool node.stacker
 
 if [ "$NODE_STACKER" = "true" ]; then
   echo "Configuring node to run with signer/stacker..."
-  dasel put -f /stacks/config/config.toml -v "signer:${SIGNER_PORT}" "events_observer.[].endpoint"
+  dasel put -f /stacks/config/config.toml -v "${SIGNER_ENDPOINT}:${SIGNER_PORT}" "events_observer.[].endpoint"
   dasel put -f /stacks/config/config.toml -v "stackerdb" "events_observer.[0].events_keys.[]"
   dasel put -f /stacks/config/config.toml -v "block_proposal" "events_observer.[0].events_keys.[]"
   dasel put -f /stacks/config/config.toml -v "burn_blocks" "events_observer.[0].events_keys.[]"
