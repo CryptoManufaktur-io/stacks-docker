@@ -1,0 +1,5 @@
+# To be used with signer.yml
+services:
+  signer:
+    ports:
+      - ${SIGNER_PORT:-30000}:${SIGNER_PORT:-30000}/tcp
