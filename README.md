@@ -27,10 +27,12 @@ docker compose run --rm stx make_keychain -t
 
 Make sure to backup the output.
 
-The private key should be set as an environment variable, ideally it shouldn't be placed in the .env
+Place signer private key in .env file
+
+For example:
 
 ```
-export SIGNER_PRIVATE_KEY=d6114748969b3186513e9e55ec54666772994fa1d01741a3d147b518931b002501
+SIGNER_PRIVATE_KEY=d6114748969b3186513e9e55ec54666772994fa1d01741a3d147b518931b002501
 ./stacksd up
 ```
 
