@@ -32,7 +32,9 @@ if [[ ! -f /stacks/.initialized ]]; then
 
   if [ -n "$SNAPSHOT" ]; then
     echo "Downloading snapshot..."
-    curl --fail --location --progress-bar "$SNAPSHOT" | pigz -dc | tar -x -C /stacks/data
+    curl --fail --location --progress-bar -o /stacks/snapshot.tar.gz "$SNAPSHOT" && \
+    tar -xzf /stacks/snapshot.tar.gz -C /stacks/data && \
+    rm /stacks/snapshot.tar.gz
   else
     echo "No snapshot URL defined."
   fi
