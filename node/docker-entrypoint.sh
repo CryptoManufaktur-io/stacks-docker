@@ -32,7 +32,7 @@ if [[ ! -f /stacks/.initialized ]]; then
 
   if [ -n "$SNAPSHOT" ]; then
     echo "Downloading snapshot..."
-    aria2c -x 16 -s 16 -o snapshot.tar.gz "$SNAPSHOT" && tar -xzvf snapshot.tar.gz -C /stacks/data && rm snapshot.tar.gz
+    curl --fail --location --progress-bar "$SNAPSHOT" | tar -xz -C /stacks/data
   else
     echo "No snapshot URL defined."
   fi
