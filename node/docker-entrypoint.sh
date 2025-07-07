@@ -5,7 +5,7 @@ if [[ ! -f /stacks/.initialized ]]; then
   echo "Initializing!"
 
   echo "Downloading config..."
-  wget https://raw.githubusercontent.com/stacks-network/stacks-blockchain-docker/refs/heads/master/conf/${NETWORK}/Config.toml.sample -O /stacks/config/config.toml
+  wget https://raw.githubusercontent.com/stacks-network/stacks-core/refs/heads/master/sample/conf/${NETWORK}-signer.toml -O /stacks/config/config.toml
 
   # Node config.
   dasel put -f /stacks/config/config.toml -v 30 -t int node.pox_sync_sample_secs
