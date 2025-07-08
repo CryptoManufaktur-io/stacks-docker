@@ -40,15 +40,18 @@ if [[ ! -f /stacks/.initialized ]]; then
     wget --progress=bar:force:noscroll -O /stacks/snapshot.sha256 "$SHASUM_URL"
 
     echo "Verifying snapshot integrity..."
-    cd /stacks && sha256sum -c snapshot.sha256
+    # Get the expected filename from the sha256 file and replace it with our actual filename
+    EXPECTED_HASH=$(cut -d' ' -f1 /stacks/snapshot.sha256)
+    ACTUAL_HASH=$(sha256sum /stacks/snapshot.tar.gz | cut -d' ' -f1)
 
-    if [ $? -eq 0 ]; then
+    if [ "$EXPECTED_HASH" = "$ACTUAL_HASH" ]; then
       echo "Snapshot verification successful. Extracting..."
       tar -xzf /stacks/snapshot.tar.gz -C /stacks/data
       rm /stacks/snapshot.tar.gz /stacks/snapshot.sha256
       echo "Snapshot extraction complete."
     else
-      echo "Snapshot verification failed. Removing corrupted files..."
+      echo "Snapshot verification failed. Expected: $EXPECTED_HASH, Got: $ACTUAL_HASH"
+      echo "Removing corrupted files..."
       rm -f /stacks/snapshot.tar.gz /stacks/snapshot.sha256
       exit 1
     fi
