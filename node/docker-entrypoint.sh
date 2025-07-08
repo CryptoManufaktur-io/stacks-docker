@@ -32,9 +32,26 @@ if [[ ! -f /stacks/.initialized ]]; then
 
   if [ -n "$SNAPSHOT" ]; then
     echo "Downloading snapshot..."
-    curl --fail --location --progress-bar -o /stacks/snapshot.tar.gz "$SNAPSHOT" && \
-    tar -xzf /stacks/snapshot.tar.gz -C /stacks/data && \
-    rm /stacks/snapshot.tar.gz
+    wget --progress=bar:force:noscroll -O /stacks/snapshot.tar.gz "$SNAPSHOT"
+
+    # Download and verify shasum
+    SHASUM_URL="${SNAPSHOT%.tar.gz}.sha256"
+    echo "Downloading shasum for verification..."
+    wget --progress=bar:force:noscroll -O /stacks/snapshot.sha256 "$SHASUM_URL"
+
+    echo "Verifying snapshot integrity..."
+    cd /stacks && sha256sum -c snapshot.sha256
+
+    if [ $? -eq 0 ]; then
+      echo "Snapshot verification successful. Extracting..."
+      tar -xzf /stacks/snapshot.tar.gz -C /stacks/data
+      rm /stacks/snapshot.tar.gz /stacks/snapshot.sha256
+      echo "Snapshot extraction complete."
+    else
+      echo "Snapshot verification failed. Removing corrupted files..."
+      rm -f /stacks/snapshot.tar.gz /stacks/snapshot.sha256
+      exit 1
+    fi
   else
     echo "No snapshot URL defined."
   fi
