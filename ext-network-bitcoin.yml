@@ -1,0 +1,10 @@
+services:
+  node:
+    networks:
+      - default
+      - bitcoin
+
+networks:
+  bitcoin:
+    external: true
+    name: bitcoin-docker_default
