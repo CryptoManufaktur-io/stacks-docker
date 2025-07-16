@@ -9,6 +9,12 @@ and Prometheus remote write; use `:ext-network.yml` in `COMPOSE_FILE` inside `.e
 
 Run `cp default.env .env`, then `nano .env`, and update values like NETWORK, STACKS_NODE_VERSION, and SNAPSHOT.
 
+For security, generate a random node auth token:
+```
+openssl rand -hex 32
+```
+Copy the output and use it as your `NODE_AUTH_TOKEN` value in the `.env` file.
+
 If you want the consensus node RPC ports exposed locally, use `rpc-shared.yml` in `COMPOSE_FILE` inside `.env`.
 
 - `./stacksd install` brings in docker-ce, if you don't have Docker installed already.
