@@ -14,7 +14,8 @@ if [[ ! -f /stacks/.initialized ]]; then
 
   # Update Nakamoto epoch 3.2 start height for testnet only
   if [ "$NETWORK" = "testnet" ]; then
-    dasel put -f /stacks/config/config.toml -v 71525 -t int 'burnchain.epochs.(epoch_name=3.2).start_height'
+    # Update epoch 3.2 start height using dasel (3.2 is typically the last epoch at index 9)
+    dasel put -f /stacks/config/config.toml -v 71525 -t int 'burnchain.epochs.[9].start_height'
   fi
 
   # Ports config.
