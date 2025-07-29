@@ -11,7 +11,8 @@ NC='\033[0m' # No Color
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="${SCRIPT_DIR}/.env"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+ENV_FILE="${PROJECT_ROOT}/.env"
 
 # Default values (will be overridden by .env file)
 NODE_RPC_PORT=20443
@@ -24,7 +25,7 @@ CHECK_SIGNER_LOCAL=true  # Set to false if signer runs on different machine
 if [[ -f "${ENV_FILE}" ]]; then
     source "${ENV_FILE}"
 else
-    echo -e "${YELLOW}Warning: .env file not found, using defaults${NC}"
+    echo -e "${YELLOW}Warning: .env file not found at ${ENV_FILE}, using defaults${NC}"
 fi
 
 # Helper functions
@@ -293,7 +294,7 @@ main() {
 # Check dependencies
 if ! command -v jq >/dev/null 2>&1; then
     echo -e "${RED}Error: jq is required but not installed.${NC}"
-    echo "Please install jq: brew install jq (on macOS)"
+    echo "Please install jq: apt install jq (on Ubuntu)"
     exit 1
 fi
 
@@ -302,8 +303,8 @@ if ! command -v curl >/dev/null 2>&1; then
     exit 1
 fi
 
-# Change to script directory
-cd "${SCRIPT_DIR}"
+# Change to project root directory (where docker-compose.yml is located)
+cd "${PROJECT_ROOT}"
 
 # Run the main function
 main "$@"

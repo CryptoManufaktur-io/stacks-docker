@@ -12,6 +12,11 @@ if [[ ! -f /stacks/.initialized ]]; then
   dasel put -f /stacks/config/config.toml -v true -t bool node.always_use_affirmation_maps
   dasel put -f /stacks/config/config.toml -v true -t bool node.require_affirmed_anchor_blocks
 
+  # Update Nakamoto epoch 3.2 start height for testnet only
+  if [ "$NETWORK" = "testnet" ]; then
+    dasel put -f /stacks/config/config.toml -v 71525 -t int 'burnchain.epochs.(epoch_name=3.2).start_height'
+  fi
+
   # Ports config.
   dasel put -f /stacks/config/config.toml -v "/stacks/data" node.working_dir
   dasel put -f /stacks/config/config.toml -v "0.0.0.0:${NODE_RPC_PORT}" node.rpc_bind
