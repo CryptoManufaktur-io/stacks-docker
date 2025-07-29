@@ -14,8 +14,7 @@ if [[ ! -f /stacks/.initialized ]]; then
 
   # Update Nakamoto epoch 3.2 start height for testnet only
   if [ "$NETWORK" = "testnet" ]; then
-    # Find and update epoch 3.2 start height using sed
-    sed -i 's/^start_height = 2100$/start_height = 71525/' /stacks/config/config.toml
+    sed -i '/epoch_name = .3\.2./,/start_height/ s/start_height = 2100/start_height = 71525/' /stacks/config/config.toml
   fi
 
   # Ports config.
